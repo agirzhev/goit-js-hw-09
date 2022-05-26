@@ -6,43 +6,52 @@ const stepDeplay = document.querySelectorAll('input')[1]
 const amountDeplay = document.querySelectorAll('input')[2]
 let time = 0
 
-function createPromise(position, delay, step) {
+function createPromise(position, delay, step, workTime) {
   if (step === 0) {
     time = 0
+    console.log(time)
     time = time + Number(position)
+    console.log(time)
   } else {
     time = time + Number(delay)
+    console.log(time)
   }
 
   
-  return new Promise((resolve, reject) => {
-      const shouldResolve = Math.random() > 0.3;
-      
-      if (shouldResolve) {
-        // Fulfill
-        resolve(Notiflix.Notify.success(`✅ Fulfilled promise ${step+1} in ${time}ms`)) 
-      } else {
-        reject(Notiflix.Notify.failure(`❌ Rejected promise ${step+1} in ${time}ms`))  
+  const promise = new Promise((resolve, reject) => {
+  
+    setTimeout(() => {
+      const shouldResolve = Math.random();
+      if (shouldResolve> 0.3){ 
+        resolve(shouldResolve);
       }
+        reject(shouldResolve)
+    }, time);
+    })
     
-  })
+    
+  promise.then(
+    result => 
+      Notiflix.Notify.success(`✅ Fulfilled promise ${step+1} in ${workTime}ms`) // result - аргумент resolve
+    )
+  promise.catch(  
+    result => 
+      Notiflix.Notify.failure(`❌ Rejected promise ${step+1} in ${workTime}ms`) // error - аргумент reject
+    )  
 }
 
 form.addEventListener("submit", function (event) {
 
   event.preventDefault()
-
+  let workTime = 0
   for (let i = 0; i <= amountDeplay.value - 1; i += 1) {
     if (i === 0) {
-      setTimeout(
-        createPromise(fistDeplay.value, stepDeplay.value, i), fistDeplay.value
-      )  
+      workTime = workTime + Number(fistDeplay.value)
+      createPromise(fistDeplay.value, stepDeplay.value, i, workTime)
     } else {
-      setTimeout(
-        createPromise(fistDeplay.value, stepDeplay.value, i), stepDeplay.value
-      )
+      workTime = workTime + Number(stepDeplay.value)
+      createPromise(fistDeplay.value, stepDeplay.value, i, workTime)
     }
 }   
-
 } 
 );
